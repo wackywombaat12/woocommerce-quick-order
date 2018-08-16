@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Loader from "./Loader.jsx";
 
 class ProductCategoriesSelect extends Component {
   constructor(props) {
@@ -8,7 +9,8 @@ class ProductCategoriesSelect extends Component {
     this.getCategoryData = this.getCategoryData.bind(this);
 
     this.state = {
-      category_list: null
+      category_list: null,
+      loading: true
     };
   }
 
@@ -25,7 +27,8 @@ class ProductCategoriesSelect extends Component {
       .then(
         function(result) {
           this.setState({
-            category_list: result
+            category_list: result,
+            loading: false
           });
         }.bind(this)
       );
@@ -38,16 +41,28 @@ class ProductCategoriesSelect extends Component {
   render() {
     return (
       <div>
-        <select onChange={this.handleChange}>
-          <option value="select">--Select Category--</option>
-          {this.state &&
-            this.state.category_list &&
-            Object.keys(this.state.category_list).map(index => (
-              <option key={index} value={index}>
-                {this.state.category_list[index]}
-              </option>
-            ))}
-        </select>
+        {this.state &&
+          this.state.loading &&
+          this.state.category_list === null && (
+            <tr>
+              <td colSpan="6">
+                <Loader />
+              </td>
+            </tr>
+          )}
+        {this.state &&
+          this.state.category_list !== null && (
+            <select onChange={this.handleChange}>
+              <option value="select">Select a category</option>
+              {this.state &&
+                this.state.category_list &&
+                Object.keys(this.state.category_list).map(index => (
+                  <option key={index} value={index}>
+                    {this.state.category_list[index]}
+                  </option>
+                ))}
+            </select>
+          )}
       </div>
     );
   }

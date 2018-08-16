@@ -58,44 +58,6 @@ class Quick_Order_Public {
 	 */
 	public function quick_order_page() {
 		ob_start();
-		$page        = 1;
-		$category_id = 17;
-
-		$category = get_term_by( 'id', $category_id, 'product_cat' );
-		if ( $category ) {
-			$cat_slug = $category->slug;
-			$args     = array(
-				'category' => [ $cat_slug ],
-				'paginate' => true,
-				'return'   => 'ids',
-				'page'     => $page,
-			);
-			$products = wc_get_products( $args );
-			$product_ids            = $products->products;
-			$image_size             = apply_filters( 'single_product_archive_thumbnail_size', 'woocommerce_gallery_thumbnail' );
-			$currency_symbol        = get_woocommerce_currency_symbol();
-			$final_data['products'] = [];
-			
-			foreach ( $product_ids as $id ) {
-				$product = new WC_Product( $id );
-				$url     = get_the_post_thumbnail_url( $id, $image_size );
-				if ( ! $url ) {
-					$url = wc_placeholder_img_src( 'woocommerce_gallery_thumbnail' );
-				}
-				$product_data = [
-					'id'      => $id,
-					'sku'     => $product->get_sku(),
-					'name'    => $product->get_name(),
-					'price'   => $product->get_price(),
-					'image'   => $url,
-					'page'    => $data['page'],
-					'status'  => $product->get_stock_status(),
-
-				];
-				array_push( $final_data['products'], $product_data );
-			}
-			print_r( $final_data );
-		}
 		?>
 			<input id="quick_order_nonce" type="hidden" name="quick_order_nonce" value="'<?php echo esc_html( wp_create_nonce( 'quick-order-nonce' ) ); ?>'">
 			<div id="quick-order-app">	

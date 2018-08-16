@@ -55,25 +55,27 @@ class OrderTable extends Component {
   }
 
   getProductsByCategory() {
-    jQuery
-      .ajax({
-        url:
-          "/wp-json/quick-order/v1/products/" +
-          this.state.category +
-          "/" +
-          this.state.page,
-        type: "GET"
-      })
-      .then(
-        function(result) {
-          console.log(result);
-          this.setState({
-            products: result.products,
-            totalPages: result.totalPages,
-            loading: false
-          });
-        }.bind(this)
-      );
+    if (this.state.category !== "select") {
+      jQuery
+        .ajax({
+          url:
+            "/wp-json/quick-order/v1/products/" +
+            this.state.category +
+            "/" +
+            this.state.page,
+          type: "GET"
+        })
+        .then(
+          function(result) {
+            console.log(result);
+            this.setState({
+              products: result.products,
+              totalPages: result.totalPages,
+              loading: false
+            });
+          }.bind(this)
+        );
+    }
   }
 
   // This method will be sent to the child component
@@ -106,7 +108,8 @@ class OrderTable extends Component {
               <th>Buy</th>
             </tr>
             {this.state &&
-              this.state.loading && (
+              this.state.loading &&
+              this.state.category !== "select" && (
                 <tr>
                   <td colSpan="6">
                     <Loader />
@@ -115,6 +118,7 @@ class OrderTable extends Component {
               )}
             {this.state &&
               this.state.products !== null &&
+              this.state.category !== "select" &&
               this.state.products.map(product => (
                 <OrderTableRow
                   key={product.id}
@@ -125,7 +129,9 @@ class OrderTable extends Component {
           </tbody>
         </table>
         {this.state &&
-          this.state.totalPages && (
+          this.state.totalPages &&
+          this.state.totalPages &&
+          this.state.category !== "select" && (
             <Pagination
               totalPages={this.state.totalPages}
               page={this.state.page}

@@ -100,21 +100,26 @@ class Quick_Order_Endpoints_Public {
 			$final_data['products'] = [];
 			foreach ( $product_ids as $id ) {
 				$product = new WC_Product( $id );
-				$url     = get_the_post_thumbnail_url( $id, $image_size );
-				if ( ! $url ) {
-					$url = wc_placeholder_img_src( 'woocommerce_gallery_thumbnail' );
-				}
-				$product_data = [
-					'id'     => $id,
-					'sku'    => $product->get_sku(),
-					'name'   => $product->get_name(),
-					'price'  => $product->get_price(),
-					'image'  => $url,
-					'page'   => $data['page'],
-					'status' => $product->get_stock_status(),
+				$status  = $product->get_status();
 
-				];
-				array_push( $final_data['products'], $product_data );
+				// Only send published products.
+				if ( 'publish' === $status ) {
+					$url = get_the_post_thumbnail_url( $id, $image_size );
+					if ( ! $url ) {
+						$url = wc_placeholder_img_src( 'woocommerce_gallery_thumbnail' );
+					}
+					$product_data = [
+						'id'     => $id,
+						'sku'    => $product->get_sku(),
+						'name'   => $product->get_name(),
+						'price'  => $product->get_price_html(),
+						'image'  => $url,
+						'page'   => $data['page'],
+						'status' => $product->get_stock_status(),
+
+					];
+					array_push( $final_data['products'], $product_data );
+				}
 			}
 			$final_data['totalPages'] = $products->max_num_pages;
 			return $final_data;
@@ -135,7 +140,6 @@ class Quick_Order_Endpoints_Public {
 			'orderby'    => $orderby,
 			'order'      => $order,
 			'hide_empty' => $hide_empty,
-			'parent'     => 0,
 			'fields'     => 'id=>name',
 		);
 
